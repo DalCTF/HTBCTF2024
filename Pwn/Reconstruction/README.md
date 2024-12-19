@@ -22,7 +22,7 @@ RELRO     : Full
 
 Even though the program is PIE enable, it won't affect us as we will see later on.
 
-By openning the executable through Binary Ninja, we can see there are 4 main functions that we need to focus on:
+By opening the executable through Binary Ninja, we can see there are 4 main functions that we need to focus on:
 
 + `main()`:
 
@@ -242,7 +242,7 @@ int64_t regs(int64_t arg1, int64_t arg2 @ r12, int64_t arg3 @ r13, int64_t arg4 
 
 To get the flag, we would have to reach `read_flag()` in `main()`, and to do that, `check()` has to return a number != 0.
 
-Looking at the code in both `main()` and `check()`, we won't be able to exploit buffer overflow, as the character being read is limited, and the first input is force is be `fix`. If we analyze the code for the second input a bit more, we can see that in order for the input be valid, it has to be from the list of 18 allowed bytes and has to be at least 60 characters, as seen here in `validate_payload()`.
+Looking at the code in both `main()` and `check()`, we won't be able to exploit buffer overflow, as the character being read is limited, and the first input is force is be `"fix"`. If we analyze the code for the second input a bit more, we can see that in order for the input be valid, it has to be from the list of 18 allowed bytes and has to be at least 60 characters, as seen here in `validate_payload()`.
 
 + List of allow_bytes:
 ```c
@@ -416,6 +416,8 @@ After running the `payload.py` script, we get this output:
 
 [+] Correct value: [ 0x1337c0de ] 
 ```
+Notice how it show the current value in register `r8` and its correct value. This means we have craft ASM instructions that put the correct value to the corresponding register. 
+
 <br>
 
 Let's take a look at where we are in the code to get this output in `check()`:
@@ -447,7 +449,7 @@ while (true)
 }
 ```
 
-> The output string in the code get shorten out in Binary Ninja, here's the full printf string: `"%s\n[-] Value of [ %s$%s%s ]: [ %s0x%lx%s ]%s\n\n"   "[+] Correct value: [ %s0x%lx%s ]\n\n"`
+> The output string in the code get shorten out in Binary Ninja, here's the full printf string: `"%s\n[-] Value of [ %s$%s%s ]: [ %s0x%lx%s ]%s\n\n"   "[+] Correct value: [ %s0x%lx%s ]\n\n"`.
 
 > **Disclaimer:** The predefined value of the registers actually exist on the dissassembly, specifically the `&values`. I only figured this out after the competition. Which is why I had to figure out each ASM instructions interatively to slowly get the correct values for every registers. If we know the `&values` ahead, we can figure out every instructions at once. 
 
@@ -470,7 +472,7 @@ From those references, we now know:
 + `mov` in ModR/M Byte memory addressing mode requires a lot more number of bytes to represent the instruction, but we should avoid this mode whenever possible, because the `inputBuffer` memory was only limited to 60 characters, going past this will result in bad instruction/illegal instruction.
 + `mov` in SIB Byte memory addressing mode requires less bytes, but some register's bytes in this mode are not on the `allowed_bytes` list, hence why we need ModR/M.
 
-**=> Here's the instruction in bytes that I used, and its ASM equivalent**
+**=> Here's the instruction in bytes that I used, and its ASM equivalent**:
 
 ```
         OPCODE                                ASM                        MEMORY ADDRESSING MODE
