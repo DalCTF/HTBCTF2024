@@ -6,7 +6,7 @@ The problem give us a 64-bit ELF executable with PIE enable that prompt us to en
 
 ## Solution
 
-### • Gathering info:
+### Gathering info:
 
 Checksec the executable give us:
 
@@ -284,7 +284,7 @@ while (true)
 <br>
 <br>
 
-### • Getting past `validate_payload()` and `inputBuffer()`:
+### Getting past `validate_payload()` and `inputBuffer()`:
 
 The biggest roadblock ahead for me was figuring out how to utilize the allowed bytes, as in what do they represent, how the program is using it. This is when I figured out in the function `check()`, after `validate_payload()` get called, the input buffer get called as a function! Here's the C and ASM equivalent from Binary Ninja:
 
