@@ -303,7 +303,7 @@ munmap(inputBuffer, 60);
 ```
 
 - ASM:
-```assembly
+```x86asm
 000019a6  e8fef9ffff         call    validate_payload
 000019ab  85c0               test    eax, eax
 000019ad  7519               jne     0x19c8
